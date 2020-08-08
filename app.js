@@ -21,22 +21,16 @@ const client = new Client({
 })
 client.connect();
 
-const COLUMNS = ['id', 'name', 'price', 'duration', 'validity', 'description', 'created_at']
+const COLUMNS = ['id', 'name', 'price', 'duration', 'validity', 'description']
 const port = process.env.PORT || 3001;
 
 app.get('/hotels', (req, res) => {
-  client.query('SELECT * FROM hotels;', (err, query) => {
-    if (err) throw err;
-    const results = []
-    for (let row of query.rows) {
-      results.push(row)
-    }
-    res.send(results);
-  });
+  client.query('SELECT * FROM hotels;', (err, query) => res.send(err || query.rows));
 })
 app.post('/hotel', (req, res) => {
   const { name, price, duration, validity, description } = req.body;
-  const values = [uuid.v4(), name, price, duration, validity, description, new Date().toISOString()];
+  // const values = [uuid.v4(), name, price, duration, validity, description, new Date().toISOString()];
+  const values = [uuid.v4(), name, price, duration, validity, description];
   let stringValues = '';
   values.forEach((item, index) => {
     stringValues += `'${item}'`;
@@ -46,28 +40,22 @@ app.post('/hotel', (req, res) => {
   })
 
   const stmt = `INSERT INTO hotels(${COLUMNS.toString()}) VALUES(${stringValues}) RETURNING *`;
-  client.query(stmt, (err, query) => {
-    if (err) {
-      res.send(err);
-      throw err;
-    }
-    for (let row of query.rows) {
-      console.log(JSON.stringify(row));
-    }
-    res.send('success');
-  });
+  client.query(stmt, err => res.send(err || 'success'));
 });
 
 app.delete('/hotel/:id', function (req, res) {
   const stmt = `DELETE FROM hotels WHERE id='${req.params.id}'`;
-  client.query(stmt, (err, query) => {
-    if (err) {
-      res.send(err);
-      throw err;
-    }
+  client.query(stmt, err => res.send(err || 'success'));
+});
 
-    res.send('success');
-  });
+
+app.put('/hotel/:id', function (req, res) {
+  const { name, price, duration, validity, description } = req.body;
+
+  const stmt = `UPDATE hotels 
+    SET name='${name}', price=${price}, duration='${duration}', validity='${validity}', description='${description}'
+    WHERE id='${req.params.id}'`;
+  client.query(stmt, err => res.send(err || 'success'));
 });
 
 app.listen(port, () => {
