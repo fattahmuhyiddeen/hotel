@@ -25,11 +25,10 @@ const COLUMNS = ['id', 'name', 'price', 'duration', 'validity', 'description']
 const port = process.env.PORT || 3001;
 
 app.get('/hotels', (req, res) => {
-  client.query('SELECT * FROM hotels;', (err, query) => res.send(err || query.rows));
+  client.query('SELECT * FROM hotels ORDER BY created_at DESC', (err, query) => res.send(err || query.rows));
 })
 app.post('/hotel', (req, res) => {
   const { name, price, duration, validity, description } = req.body;
-  // const values = [uuid.v4(), name, price, duration, validity, description, new Date().toISOString()];
   const values = [uuid.v4(), name, price, duration, validity, description];
   let stringValues = '';
   values.forEach((item, index) => {
