@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 //end middlewares
 
-const db_url = process.env.DATABASE_URL || 'postgres://nanfgocvymfplr:835de1152b3ca7f429f5b677fe6e04a8fd026bf8dbc7d3446ee10f94749aea41@ec2-107-22-7-9.compute-1.amazonaws.com:5432/dfr3numuiatk5g';
+const db_url = process.env.DATABASE_URL;
 // pgp.pg.defaults.ssl = true;
 // const db = pgp(db_url + '?ssl=false')
 // const db = pgp(db_url)
@@ -70,16 +70,20 @@ app.post('/hotel', jsonParser, (req, res) => {
 
   client.connect();
 
-  client.query(stmt, (err, res) => {
-    if (err) throw err;
+  client.query(stmt, (err, query) => {
+    if (err) {
+      res.send(err);
+      throw err;
+    }
     // if (err) {
     //   console.log(err);
     //   return err;
     // }
-    for (let row of res.rows) {
+    for (let row of query.rows) {
       console.log(JSON.stringify(row));
     }
     client.end();
+    res.send('success');
   });
   // client.query('SELECT * FROM hotels;', (err, res) => {
   //   if (err) throw err;
@@ -89,7 +93,6 @@ app.post('/hotel', jsonParser, (req, res) => {
   //   client.end();
   // });
 
-  res.send('Hello World!')
 })
 
 app.listen(port, () => {
