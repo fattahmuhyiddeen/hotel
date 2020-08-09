@@ -40,6 +40,7 @@ app.post('/hotel', (req, res) => {
   const { name, price, duration, validity, description } = req.body;
   const values = [uuid.v4(), name, price, duration, validity, description];
 
+  // console.log('values', values)
   let stringValues = '';
   values.forEach((item, index) => {
     stringValues += `'${item}'`;
@@ -60,6 +61,7 @@ app.delete('/hotel/:id', (req, res) => {
 
 app.put('/hotel/:id', (req, res) => {
   const { name, price, duration, validity, description } = req.body;
+  // console.log('name', name)
 
   const stmt = `UPDATE hotels 
     SET name='${name}', price=${price}, duration='${duration}', validity='${validity}', description='${description}'
