@@ -39,6 +39,7 @@ app.get('/hotels', (req, res) => {
 app.post('/hotel', (req, res) => {
   const { name, price, duration, validity, description } = req.body;
   const values = [uuid.v4(), name, price, duration, validity, description];
+
   let stringValues = '';
   values.forEach((item, index) => {
     stringValues += `'${item}'`;
@@ -51,13 +52,13 @@ app.post('/hotel', (req, res) => {
   client.query(stmt, err => response(res, 'success', err));
 });
 
-app.delete('/hotel/:id', function (req, res) {
+app.delete('/hotel/:id', (req, res) => {
   const stmt = `DELETE FROM hotels WHERE id='${req.params.id}'`;
   client.query(stmt, err => response(res, 'success', err));
 });
 
 
-app.put('/hotel/:id', function (req, res) {
+app.put('/hotel/:id', (req, res) => {
   const { name, price, duration, validity, description } = req.body;
 
   const stmt = `UPDATE hotels 
