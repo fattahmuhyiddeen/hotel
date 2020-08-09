@@ -9,3 +9,8 @@
 1. Clone this project
 1. Install dependencies through `yarn`
 1. Define an environment variable `DATABASE_URL=<postgres_url>`
+
+### Limitations & Improvements
+1. Should use ORM library, such as Sequelizer while making crud operation
+1. Should implement unit test (but this require code to be organized into clean architecture first)
+1. Should have Api spec & documentation
