@@ -8,7 +8,6 @@ const cors = require('cors');
 // middlewares
 app.use(cors());
 app.use(bodyParser.json());
-app.use(bodyParser.json({ type: 'application/*+json' }))
 //end middlewares
 
 const db_url = process.env.DATABASE_URL;
@@ -28,11 +27,12 @@ const client = new Client({
 })
 client.connect();
 
-const COLUMNS = ['id', 'name', 'price', 'duration', 'validity', 'description']
-const port = process.env.PORT || 3001;
+const COLUMNS = ['id', 'name', 'price', 'duration', 'validity', 'description'];
+const TABLE = 'hotels';
+const PORT = process.env.PORT || 3001;
 
 app.get('/hotels', (req, res) => {
-  client.query('SELECT * FROM hotels ORDER BY created_at DESC', (err, query) => response(res, query.rows, err));
+  client.query(`SELECT * FROM ${TABLE} ORDER BY created_at DESC`, (err, query) => response(res, query.rows, err));
 })
 app.post('/hotel', (req, res) => {
   const { name, price, duration, validity, description } = req.body;
@@ -46,12 +46,12 @@ app.post('/hotel', (req, res) => {
     }
   })
 
-  const stmt = `INSERT INTO hotels(${COLUMNS.toString()}) VALUES(${stringValues}) RETURNING *`;
+  const stmt = `INSERT INTO ${TABLE}(${COLUMNS.toString()}) VALUES(${stringValues}) RETURNING *`;
   client.query(stmt, err => response(res, 'success', err));
 });
 
 app.delete('/hotel/:id', (req, res) => {
-  const stmt = `DELETE FROM hotels WHERE id='${req.params.id}'`;
+  const stmt = `DELETE FROM ${TABLE} WHERE id='${req.params.id}'`;
   client.query(stmt, err => response(res, 'success', err));
 });
 
@@ -59,12 +59,12 @@ app.delete('/hotel/:id', (req, res) => {
 app.put('/hotel/:id', (req, res) => {
   const { name, price, duration, validity, description } = req.body;
 
-  const stmt = `UPDATE hotels 
+  const stmt = `UPDATE ${TABLE} 
     SET name='${name}', price=${price}, duration='${duration}', validity='${validity}', description='${description}'
     WHERE id='${req.params.id}'`;
   client.query(stmt, err => response(res, 'success', err));
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
+app.listen(PORT, () => {
+  console.log(`Example app listening at http://localhost:${PORT}`)
 })
